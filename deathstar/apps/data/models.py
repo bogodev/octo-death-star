@@ -48,9 +48,25 @@ class SensorData(models.Model):
         return dataline.data_line, stamp
 
     @staticmethod
-    def import_test_data():
+    def import_test_data(version):
 
-        with open(settings.SITE_ROOT + "/deathstar/apps/data/initial_data.csv") as f:
+
+        if version == '1':
+            path = "/deathstar/apps/data/initial_data.csv"
+        elif version == '2':
+            path = "/deathstar/apps/data/data_v2.csv"
+        else:
+            path = "/deathstar/apps/data/initial_data.csv"
+
+        return SensorData.import_data(path)
+
+
+    @staticmethod
+    def import_data(path):
+
+        SensorData.objects.all().delete()
+
+        with open(settings.SITE_ROOT + path) as f:
             content = f.readlines()
 
         for line in content:
@@ -61,7 +77,8 @@ class SensorData(models.Model):
             testObject = SensorData(stamp=index,data_line=value)
             testObject.save()
 
-        return "Completed"
+        return "Completed + "
+
 
     @staticmethod
     def parse_data_string(data):
@@ -87,7 +104,6 @@ class SensorData(models.Model):
         current_time = time.time()
 
         result = int(current_time - initial_time)
-        print result
         return result
 
 

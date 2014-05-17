@@ -62,6 +62,7 @@
     <script src="{{ STATIC_URL }}js/three/controls/OrbitControls.js"></script>
     <script src="{{ STATIC_URL }}js/three/Detector.js"></script>
     <script src="{{ STATIC_URL }}js/three/libs/stats.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
 
     <script>
     
@@ -71,7 +72,6 @@
     var camera, scene, renderer;
     var mesh;
 
-    var particles = 200;
     var geometry, sphereThree;
 
     var info = document.createElement( 'div' );
@@ -80,9 +80,20 @@
 
     var projector = new THREE.Projector();
     document.addEventListener( 'mousedown', onDocumentMouseDown, false);
+    var sphereGeometry = new THREE.SphereGeometry(2000, 10, 10);
+    var sphereMaterial = {};
+    sphereMaterial["C"] = { name:"Cometa",
+                                material:new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true})};
+    sphereMaterial["M"] = {name:"Meteoro",
+                                material:new THREE.MeshBasicMaterial({color: 0x800080, wireframe: true})};
+    sphereMaterial["O"] = {name: "Otros",
+                                material:new THREE.MeshBasicMaterial({color: 0x008000, wireframe: true})};
+
 
     init();
     animate();
+
+
 
     function init() {
 
@@ -100,38 +111,9 @@
         
         var limit = 100000;
         
-        var sphereGeometry = new THREE.SphereGeometry(2000, 10, 10);
-        var sphereMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
         
         sphereThree = [];
-        for ( var i = 0; i < particles; i += 1 ) {
-            
-            // positions
 
-            var type = 'O';
-            
-            var x = (Math.random() * limit * 2) - limit;
-            var y = (Math.random() * limit * 2) - limit;
-            var z = (Math.random() * limit * 2) - limit;
-
-            var sphereMaterial = new THREE.MeshBasicMaterial({
-                color: ('C' === type) ? 0xffffff : ('M' === type) ? 0x800080 : 0x008000, 
-                wireframe: true
-            });
-            //console.log(sphereMaterial.color);
-            sphereThree[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
-            
-            sphereThree[i].position.x = x;
-            sphereThree[i].position.y = y;
-            sphereThree[i].position.z = z;
-            
-            
-            sphereThree[i].type = ('C' === type) ? 'Cometa' : ('M' === type) ? 'Meteoro' : 'Otro';
-            
-            scene.add(sphereThree[i]);
-        }
-        
-        
         var mesh = new THREE.Mesh( new THREE.SphereGeometry( 2000, 100, 100), new THREE.MeshBasicMaterial( { color: 0xFFFF00, wireframe: true } ) );
         mesh.position.x = 0;
         mesh.position.y = 0;
@@ -158,7 +140,7 @@
         window.addEventListener( 'resize', onWindowResize, false );
         controls = new THREE.OrbitControls( camera );
         controls.addEventListener( 'change', render ) ;
-
+        setInterval(function(){update_data()}, 500);
     }
 
     function onWindowResize() {
@@ -223,9 +205,40 @@
         
     }
 
-   function update_data(){
-                
-   }
+    function create_astro(obt){
+        
+        var spt = new THREE.Mesh(sphereGeometry, sphereMaterial[obt.typ].material);
+        
+        spt.position.x = obt.x;
+        spt.position.y = obt.y;
+        spt.position.z = obt.z;
+        
+        spt.type = sphereMaterial[obt.type].name;
+        return spt
+
+    }
+
+
+
+
+    function update_data(){
+        $.get("/data/", function(data){
+            if (sphereThree.length == 0){
+                $.each(data.data, function(pt, r){
+                    sphereThree[r.index] = create_astro(r);
+                    scene.add(sphereThree[r.index]);
+                });
+            }else{
+                $.each(data.data, function(pt, r){
+                    sphereThree[r.index].position.x = r.x;
+                    sphereThree[r.index].position.y = r.y;
+                    sphereThree[r.index].position.z = r.z;
+                });
+            }
+        });
+    }
+
+    
 
             </script>
 

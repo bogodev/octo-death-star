@@ -9,8 +9,8 @@ from django.shortcuts import render_to_response
 
 
 def load_test_data(request):
-
-    return HttpResponse(SensorData.import_test_data(),content_type="text/plain")
+    version = request.GET.get('version', '1')
+    return HttpResponse(SensorData.import_test_data(version),content_type="text/plain")
 
 
 def test_data(request):
