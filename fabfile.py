@@ -48,6 +48,11 @@ def cont(cmd, message):
 
     if message and result.failed and not confirm(message):
         abort('Stopped execution per user request.')
+
+@task
+def run():
+    """Run the server."""
+    local('python manage.py runserver 0.0.0.0:8000')
 ########## END HELPERS
 
 
