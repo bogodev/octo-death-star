@@ -13,5 +13,5 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^data/$', 'apps.data.views.test_data'),
+    url(r'^$', 'apps.data.views.map'),
 )
-
