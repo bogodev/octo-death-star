@@ -56,7 +56,7 @@ class SensorData(models.Model):
         for line in content:
             split = line.split(';', 1)
             index = split[0]
-            value = split[1]
+            value = split[1].rstrip("\r\n")
 
             testObject = SensorData(stamp=index,data_line=value)
             testObject.save()
