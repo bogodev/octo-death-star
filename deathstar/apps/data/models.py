@@ -2,11 +2,25 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+
+import time
+
 
 class SensorData(models.Model):
 
+    stamp = models.PositiveIntegerField()
+    data_line = models.TextField(null=True)
+
+    @classmethod
+    def get_data(cls, update, last_stamp):
+        stamp = SensorData.fake_stamp();
+        result, stamp = SensorData.get_data_string(stamp)
+        return SensorData.parse_data_string(result), stamp
+
     @staticmethod
-    def get_latest_data():
+    def get_static_data():
         return [
             {'x':5135,'y':5042,'z':5000},
             {'x':5125,'y':5079,'z':5000},
@@ -21,12 +35,33 @@ class SensorData(models.Model):
         ]
 
     @staticmethod
-    def get_live_data():
-        return SensorData.parse_data_string(SensorData.get_data_string(1))
+    def get_data_string(index):
+
+        try:
+            dataline = SensorData.objects.get(stamp=index)
+            stamp = index
+        except ObjectDoesNotExist, e:
+            # This is a big fat lie. the stamp changes, but the data not.
+            dataline = SensorData.objects.get(stamp=1)
+            stamp = index
+
+        return dataline.data_line, stamp
 
     @staticmethod
-    def get_data_string(index):
-        return "1;O,5135,5042,5000;M,10000,10000,10000"
+    def import_test_data():
+
+        with open(settings.SITE_ROOT + "/deathstar/apps/data/initial_data.csv") as f:
+            content = f.readlines()
+
+        for line in content:
+            split = line.split(';', 1)
+            index = split[0]
+            value = split[1]
+
+            testObject = SensorData(stamp=index,data_line=value)
+            testObject.save()
+
+        return "Completed"
 
     @staticmethod
     def parse_data_string(data):
@@ -34,8 +69,8 @@ class SensorData(models.Model):
         must return an array of x,y,z,type,index values
         """
         values = data.split(';')
-        index = data[0]
-        values = values[1:]
+        # Remove the first position
+        # values = values[1:]
 
         result = []
 
@@ -45,3 +80,14 @@ class SensorData(models.Model):
             result.append(dict(zip(['type','x','y','z','index'],object_data)))
 
         return result
+
+    @staticmethod
+    def fake_stamp():
+        initial_time = settings.START_TIME
+        current_time = time.time()
+
+        result = int(current_time - initial_time)
+        print result
+        return result
+
+

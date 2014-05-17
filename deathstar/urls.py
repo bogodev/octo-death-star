@@ -14,4 +14,5 @@ urlpatterns = patterns('',
 
     url(r'^data/$', 'apps.data.views.test_data'),
     url(r'^$', 'apps.data.views.map'),
+    url(r'^import_initial_data/$', 'apps.data.views.load_test_data'),
 )
