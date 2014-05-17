@@ -88,6 +88,10 @@
                                 material:new THREE.MeshBasicMaterial({color: 0x800080, wireframe: true})};
     sphereMaterial["O"] = {name: "Otros",
                                 material:new THREE.MeshBasicMaterial({color: 0x008000, wireframe: true})};
+    sphereMaterial["R"] = {name: "Observacion",
+                                material:new THREE.MeshBasicMaterial({color: 0xFF0000, wireframe: true})};
+    
+    
 
 
     init();
@@ -181,6 +185,14 @@
     function onDocumentMouseDown( event ) {
         
         event.preventDefault();
+
+        for (var i = 0; i < sphereThree.length; i++) {
+
+            if(sphereThree[i].observado){
+                sphereThree[i].material = sphereMaterial[sphereThree[i].type[0]].material;
+                sphereThree[i].observado = false;
+            }
+        };
         
         var vector = new THREE.Vector3( 
             ( event.clientX / window.innerWidth ) * 2 - 1, 
@@ -196,11 +208,11 @@
         if ( intersects.length > 0 ) {
 
             var particle = intersects[0].object;
-            var html = '<h2> <strong>Tipo: </strong>' + particle.type + '</h2>';
-            html += '<span> <strong>X: </strong>' + particle.position.x + '</span>';
-            html += '<span> <strong>Y: </strong>' + particle.position.y + '</span>';
-            html += '<span> <strong>Z: </strong>' + particle.position.z + '</span>';
-            info.innerHTML = html;
+            
+            show_info(particle);
+
+            particle.material = sphereMaterial['R'].material;
+            particle.observado = true;
         }
         
     }
@@ -213,8 +225,18 @@
         spt.position.z = obt.z;
         
         spt.type = sphereMaterial[obt.type].name;
-        return spt
+        spt.observado = false;
+        return spt;
 
+    }
+
+
+    function show_info(particle){
+        var html = '<h2> <strong>Tipo: </strong>' + particle.type + '</h2>';
+        html += '<span> <strong>X: </strong>' + particle.position.x + '</span>';
+        html += '<span> <strong>Y: </strong>' + particle.position.y + '</span>';
+        html += '<span> <strong>Z: </strong>' + particle.position.z + '</span>';
+        info.innerHTML = html;
     }
 
 
@@ -232,6 +254,10 @@
                     sphereThree[r.index].position.x = r.x;
                     sphereThree[r.index].position.y = r.y;
                     sphereThree[r.index].position.z = r.z;
+                    if(sphereThree[r.index].observado){
+                        show_info(sphereThree[r.index]);
+                    }
+
                 });
             }
         });
