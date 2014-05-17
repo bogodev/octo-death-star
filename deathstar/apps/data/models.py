@@ -14,8 +14,13 @@ class SensorData(models.Model):
     data_line = models.TextField(null=True)
 
     @classmethod
-    def get_data(cls, update, last_stamp):
-        stamp = SensorData.fake_stamp();
+    def get_data(cls, update, last_stamp, fake):
+
+        if fake:
+            stamp = SensorData.fake_stamp();
+        else:
+            stamp = SensorData.objects.all().order_by("-stamp")[0].stamp
+
         result, stamp = SensorData.get_data_string(stamp)
         return SensorData.parse_data_string(result), stamp
 
@@ -41,9 +46,9 @@ class SensorData(models.Model):
             dataline = SensorData.objects.get(stamp=index)
             stamp = index
         except ObjectDoesNotExist, e:
-            # This is a big fat lie. the stamp changes, but the data not.
-            dataline = SensorData.objects.get(stamp=1)
-            stamp = index
+            print "ObjectDoesNotExist"
+            stamp = SensorData.objects.all().order_by("-stamp")[0].stamp
+            dataline = SensorData.objects.get(stamp=stamp)
 
         return dataline.data_line, stamp
 
@@ -55,6 +60,8 @@ class SensorData(models.Model):
             path = "/deathstar/apps/data/initial_data.csv"
         elif version == '2':
             path = "/deathstar/apps/data/data_v2.csv"
+        elif version == '0':
+            path = None
         else:
             path = "/deathstar/apps/data/initial_data.csv"
 
@@ -66,16 +73,17 @@ class SensorData(models.Model):
 
         SensorData.objects.all().delete()
 
-        with open(settings.SITE_ROOT + path) as f:
-            content = f.readlines()
+        if path is not None:
+            with open(settings.SITE_ROOT + path) as f:
+                content = f.readlines()
 
-        for line in content:
-            split = line.split(';', 1)
-            index = split[0]
-            value = split[1].rstrip("\r\n")
+            for line in content:
+                split = line.split(';', 1)
+                index = split[0]
+                value = split[1].rstrip("\r\n")
 
-            testObject = SensorData(stamp=index,data_line=value)
-            testObject.save()
+                testObject = SensorData(stamp=index,data_line=value)
+                testObject.save()
 
         return "Completed + "
 
