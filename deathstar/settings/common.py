@@ -1,7 +1,7 @@
 """Common settings and globals."""
 
-
-from datetime import timedelta
+import time
+from datetime import timedelta, datetime
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 
@@ -277,3 +277,10 @@ COMPRESS_JS_FILTERS = [
     'compressor.filters.template.TemplateFilter',
 ]
 ########## END COMPRESSION CONFIGURATION
+
+
+########## DATA APP CONFIGURATION
+
+START_TIME = time.time()
+
+########## END DATA APP CONFIGURATION

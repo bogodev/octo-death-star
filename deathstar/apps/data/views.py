@@ -12,15 +12,20 @@ def load_test_data(request):
 
 
 def test_data(request):
-
-    source = request.GET.get('source',None)
-
     response_data = {}
 
-    if source == "live":
-        response_data['data'] = SensorData.get_live_data();
-    else:
-        response_data['data'] = SensorData.get_latest_data();
+    source = request.GET.get('source',None)
+    # Test data
+    if source == "static":
+        response_data['data'] = SensorData.get_static_data();
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
 
+    update = request.GET.get('update','false')
+    last_stamp = request.GET.get('last_stamp',None)
+
+    if update == 'false':
+        update = False
+
+    response_data['data'], response_data['stamp'] = SensorData.get_data(update,last_stamp)
 
     return HttpResponse(json.dumps(response_data), content_type="application/json")
