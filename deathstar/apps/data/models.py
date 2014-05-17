@@ -39,8 +39,9 @@ class SensorData(models.Model):
 
         result = []
 
-        for space_object in values:
+        for  index, space_object in enumerate(values):
             object_data = space_object.split(',')
-            result.append(dict(zip(['type','x','y','z'],object_data)))
+            object_data.append(index)
+            result.append(dict(zip(['type','x','y','z','index'],object_data)))
 
         return result
