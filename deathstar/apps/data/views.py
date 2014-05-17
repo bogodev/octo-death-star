@@ -23,11 +23,17 @@ def test_data(request):
 
     update = request.GET.get('update','false')
     last_stamp = request.GET.get('last_stamp',None)
+    fake_data = request.GET.get('fake','false')
+
+    if fake_data == 'true':
+        fake_data = True
+    else:
+        fake_data = False
 
     if update == 'false':
         update = False
 
-    response_data['data'], response_data['stamp'] = SensorData.get_data(update,last_stamp)
+    response_data['data'], response_data['stamp'] = SensorData.get_data(update,last_stamp, fake_data)
     return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
