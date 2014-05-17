@@ -206,8 +206,7 @@
     }
 
     function create_astro(obt){
-        
-        var spt = new THREE.Mesh(sphereGeometry, sphereMaterial[obt.typ].material);
+        var spt = new THREE.Mesh(sphereGeometry, sphereMaterial[obt.type].material);
         
         spt.position.x = obt.x;
         spt.position.y = obt.y;
