@@ -1,0 +1,17 @@
+Presentaci?n
+La estrella de la muerte cuenta con un moderno sistema de sensores remotos que pueden detectar la posici?n de cualquier cuerpo celeste a miles de kilometros. La informaci?n producida por esta red de aparatos se presenta como la posici?n del objeto en un plano cartesiano tridimensional en el que la estrella de la muerte esta ubicada en el origen y los dem?s cuerpos celestes (planetas, sat?lites naturales, meteoros y cometas) se ubican mediante las coordenadas X, Y y Z relativas al origen. Esta informaci?n es generada cada segundo por los aparatos y enviada al centro de c?mputo mediante pulsos electromec?nicos lum?nicos de baja frecuencia lo que hace que la informaci?n sea recibida en la tierra en el mismo instante en que se produce.
+
+Requerimientos
+Desarrollar un sistema de visualizaci?n de datos para la informaci?n producida por el los sensores. Este sistema debe estar en capacidad de mostrar toda la informaci?n generada, incluyendo el los planetas, sat?lites naturales, cometas y asteroides presentes en el espacio. La convencion usada sera:
+- La estrella de la muerte de color amarillo
+- Sat?lites naturales de color verde
+- Los cometas de color blanco
+- Los asteroides de color violeta
+
+En todo momento se deben poder ver los tres ejes XYZ con los cuerpos celestes indicados por la informaci?n recibida. Esta informaci?n tiene el siguiente formato:
+1;C,20, 50,90;M,15,03,10;O,00,25,32
+Esto corresponde a un registro separado pon ?;? en el que el primer dato corresponde al n?mero de la medici?n. Los dem?s datos corresponden al tipo de objeto y la posici?n en la que fueron vistos. Por lo tanto, el registro de ejemplo tiene cuatro objetos que son: Cometa (C), Meteoro (M), Otro (O) - planeta o sat?lite natural-, los valores que acompa?an cada letra est?n separados por ?,? y corresponden a los valores de XYZ.
+
+El sistema desarrollado deber? hacer una petici?n a un servicio web cada segundo, con cada petici?n, recibir? una cadena de texto que corresponde a un registro que contendr? la fecha y hora de la medici?n y la posici?n de todos los dem?s cuerpos celestes detectados en ese instante.
+
+Para simplificar las mediciones y los c?lculos, el equipo de cientificos de la estrella de la muerte ha elaborado su propia escala que va de cero hasta 100.000 para los valores de XYZ, es decir, que los valores de posici?n contendr?n valores en el rango [-100.000, 100.000], el nombre de la escala es Fanegadas N?uticas Espaciales Euclidianas (FNEE), as? pues, un meteoro puede tener para su eje X el valor de 500FNEE.
