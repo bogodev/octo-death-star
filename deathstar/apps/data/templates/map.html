@@ -144,7 +144,7 @@
         window.addEventListener( 'resize', onWindowResize, false );
         controls = new THREE.OrbitControls( camera );
         controls.addEventListener( 'change', render ) ;
-        setInterval(function(){update_data()}, 500);
+        setInterval(function(){update_data()}, 1000);
     }
 
     function onWindowResize() {
@@ -240,6 +240,22 @@
     }
 
 
+   var  move= false;
+
+    function move_element(element, pp, iter, cn){
+        if (iter>= 10){
+            return;
+        }
+        console.log(element.position)
+        element.position.x = parseInt(element.position.x) + parseInt(pp.x);
+        element.position.y = parseInt(element.position.y) + parseInt(pp.y);
+        element.position.z = parseInt(element.position.z) + parseInt(pp.z);
+        console.log(element.position)
+        setTimeout(function(){
+            move_element(element, pp, iter+1, cn)
+        }, cn);
+    }
+
 
 
     function update_data(){
@@ -251,9 +267,19 @@
                 });
             }else{
                 $.each(data.data, function(pt, r){
-                    sphereThree[r.index].position.x = r.x;
-                    sphereThree[r.index].position.y = r.y;
-                    sphereThree[r.index].position.z = r.z;
+                    //sphereThree[r.index].position.x = r.x;
+                    //sphereThree[r.index].position.y = r.y;
+                    //sphereThree[r.index].position.z = r.z;
+                    cn = 20;
+                    var pp ={};
+                    pp.x = (r.x - sphereThree[r.index].position.x) / cn 
+                    pp.y = (r.y - sphereThree[r.index].position.y) / cn 
+                    pp.z = (r.z - sphereThree[r.index].position.z) / cn 
+                    setTimeout(function(){
+                        move_element(sphereThree[r.index], pp, 0, 300/cn);
+                    },
+                               300/cn
+                              );
                     if(sphereThree[r.index].observado){
                         show_info(sphereThree[r.index]);
                     }
