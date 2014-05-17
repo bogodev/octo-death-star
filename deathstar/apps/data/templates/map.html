@@ -62,6 +62,7 @@
     <script src="{{ STATIC_URL }}js/three/controls/OrbitControls.js"></script>
     <script src="{{ STATIC_URL }}js/three/Detector.js"></script>
     <script src="{{ STATIC_URL }}js/three/libs/stats.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
 
     <script>
     
@@ -71,7 +72,6 @@
     var camera, scene, renderer;
     var mesh;
 
-    var particles = 200;
     var geometry, sphereThree;
 
     var info = document.createElement( 'div' );
@@ -80,9 +80,15 @@
 
     var projector = new THREE.Projector();
     document.addEventListener( 'mousedown', onDocumentMouseDown, false);
+    var sphereGeometry = new THREE.SphereGeometry(2000, 10, 10);
+    var sphereMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
+
+
 
     init();
     animate();
+
+
 
     function init() {
 
@@ -100,29 +106,8 @@
         
         var limit = 100000;
         
-        var sphereGeometry = new THREE.SphereGeometry(2000, 10, 10);
-        var sphereMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
         
         sphereThree = [];
-        for ( var i = 0; i < particles; i += 1 ) {
-            
-            // positions
-            
-            var x = (Math.random() * limit * 2) - limit;
-            var y = (Math.random() * limit * 2) - limit;
-            var z = (Math.random() * limit * 2) - limit;
-            sphereThree[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
-            
-            sphereThree[i].position.x = x;
-            sphereThree[i].position.y = y;
-            sphereThree[i].position.z = z;
-            
-            var type = 'O';
-            sphereThree[i].type = ('C' === type) ? 'Cometa' : ('M' === type) ? 'Meteoro' : 'Otro';
-            
-            scene.add(sphereThree[i]);
-        }
-        
         
         var mesh = new THREE.Mesh( new THREE.SphereGeometry( 2000, 100, 100), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ) );
         mesh.position.x = 0;
@@ -150,7 +135,7 @@
         window.addEventListener( 'resize', onWindowResize, false );
         controls = new THREE.OrbitControls( camera );
         controls.addEventListener( 'change', render ) ;
-
+        setInterval(function(){update_data()}, 500);
     }
 
     function onWindowResize() {
@@ -215,9 +200,39 @@
         
     }
 
-   function update_data(){
-                
-   }
+    function create_astro(obt){
+        var spt = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        
+        spt.position.x = obt.x;
+        spt.position.y = obt.y;
+        spt.position.z = obt.z;
+        
+        spt.type = ('C' === obt.typ) ? 'Cometa' : ('M' === obt.typ) ? 'Meteoro' : 'Otro';
+        return spt
+
+    }
+
+
+
+
+    function update_data(){
+        $.get("/data/", function(data){
+            if (sphereThree.length == 0){
+                $.each(data.data, function(pt, r){
+                    sphereThree[r.index] = create_astro(r);
+                    scene.add(sphereThree[r.index]);
+                });
+            }else{
+                $.each(data.data, function(pt, r){
+                    sphereThree[r.index].position.x = r.x;
+                    sphereThree[r.index].position.y = r.y;
+                    sphereThree[r.index].position.z = r.z;
+                });
+            }
+        });
+    }
+
+    
 
             </script>
 
