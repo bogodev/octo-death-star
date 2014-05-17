@@ -107,24 +107,32 @@
         for ( var i = 0; i < particles; i += 1 ) {
             
             // positions
+
+            var type = 'O';
             
             var x = (Math.random() * limit * 2) - limit;
             var y = (Math.random() * limit * 2) - limit;
             var z = (Math.random() * limit * 2) - limit;
+
+            var sphereMaterial = new THREE.MeshBasicMaterial({
+                color: ('C' === type) ? 0xffffff : ('M' === type) ? 0x800080 : 0x008000, 
+                wireframe: true
+            });
+            //console.log(sphereMaterial.color);
             sphereThree[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
             
             sphereThree[i].position.x = x;
             sphereThree[i].position.y = y;
             sphereThree[i].position.z = z;
             
-            var type = 'O';
+            
             sphereThree[i].type = ('C' === type) ? 'Cometa' : ('M' === type) ? 'Meteoro' : 'Otro';
             
             scene.add(sphereThree[i]);
         }
         
         
-        var mesh = new THREE.Mesh( new THREE.SphereGeometry( 2000, 100, 100), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ) );
+        var mesh = new THREE.Mesh( new THREE.SphereGeometry( 2000, 100, 100), new THREE.MeshBasicMaterial( { color: 0xFFFF00, wireframe: true } ) );
         mesh.position.x = 0;
         mesh.position.y = 0;
         mesh.position.z = 0;
@@ -206,10 +214,10 @@
         if ( intersects.length > 0 ) {
 
             var particle = intersects[0].object;
-            var html = '<h2> ' + particle.type + '</h2>';
-            html += '<span> ' + particle.position.x + '</span>';
-            html += '<span> ' + particle.position.y + '</span>';
-            html += '<span> ' + particle.position.z + '</span>';
+            var html = '<h2> <strong>Tipo: </strong>' + particle.type + '</h2>';
+            html += '<span> <strong>X: </strong>' + particle.position.x + '</span>';
+            html += '<span> <strong>Y: </strong>' + particle.position.y + '</span>';
+            html += '<span> <strong>Z: </strong>' + particle.position.z + '</span>';
             info.innerHTML = html;
         }
         
