@@ -27,7 +27,31 @@
 
         color: #0080ff;
     }
-</style>e
+    .infoParticula{
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 300px;
+        background-color: rgba(255,255,255,.9);
+        box-shadow: 0px 0px 5px rgba(255,255,255,.8);
+        -webkit-transition: all 300ms ease;
+        -mz-transition: all 300ms ease;
+        -ms-transition: all 300ms ease;
+        -o-transition: all 300ms ease;
+        transition: all 300ms ease;
+    }
+    .infoParticula:hover{
+        box-shadow: 0px 0px 10px rgba(255,255,255,.8);
+    }
+    .infoParticula > h2,
+    .infoParticula > span{
+        width: 100%;
+        display: block;
+        padding: 5px;
+        text-align: center;
+        color: black;
+    }
+</style>
 </head>
 <body>
 
@@ -51,11 +75,7 @@
     var geometry, sphereThree;
 
     var info = document.createElement( 'div' );
-    info.style.position = 'absolute';
-    info.style.color = 'white';
-    info.style.top = '10px';
-    info.style.width = '100%';
-    info.style.textAlign = 'center';
+    info.className += "infoParticula";
     document.body.appendChild( info );
 
     var projector = new THREE.Projector();
@@ -186,10 +206,10 @@
                 if ( intersects.length > 0 ) {
 
                     var particle = intersects[0].object;
-                    var html = '<h2> ' + particle.type + '</h2>';
-                    html += '<span> ' + particle.position.x + '</span>';
-                    html += '<span> ' + particle.position.y + '</span>';
-                    html += '<span> ' + particle.position.z + '</span>';
+                    var html = '<h2> <strong>Tipo: </strong>' + particle.type + '</h2>';
+                    html += '<span> <strong>X: </strong>' + particle.position.x + '</span>';
+                    html += '<span> <strong>Y: </strong>' + particle.position.y + '</span>';
+                    html += '<span> <strong>Z: </strong>' + particle.position.z + '</span>';
                     info.innerHTML = html;
                 }
 
