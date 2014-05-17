@@ -81,8 +81,13 @@
     var projector = new THREE.Projector();
     document.addEventListener( 'mousedown', onDocumentMouseDown, false);
     var sphereGeometry = new THREE.SphereGeometry(2000, 10, 10);
-    var sphereMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
-
+    var sphereMaterial = {};
+    sphereMaterial["C"] = { name:"Cometa",
+                                material:new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true})};
+    sphereMaterial["M"] = {name:"Meteoro",
+                                material:new THREE.MeshBasicMaterial({color: 0x800080, wireframe: true})};
+    sphereMaterial["O"] = {name: "Otros",
+                                material:new THREE.MeshBasicMaterial({color: 0x008000, wireframe: true})};
 
 
     init();
@@ -108,8 +113,8 @@
         
         
         sphereThree = [];
-        
-        var mesh = new THREE.Mesh( new THREE.SphereGeometry( 2000, 100, 100), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ) );
+
+        var mesh = new THREE.Mesh( new THREE.SphereGeometry( 2000, 100, 100), new THREE.MeshBasicMaterial( { color: 0xFFFF00, wireframe: true } ) );
         mesh.position.x = 0;
         mesh.position.y = 0;
         mesh.position.z = 0;
@@ -191,23 +196,24 @@
         if ( intersects.length > 0 ) {
 
             var particle = intersects[0].object;
-            var html = '<h2> ' + particle.type + '</h2>';
-            html += '<span> ' + particle.position.x + '</span>';
-            html += '<span> ' + particle.position.y + '</span>';
-            html += '<span> ' + particle.position.z + '</span>';
+            var html = '<h2> <strong>Tipo: </strong>' + particle.type + '</h2>';
+            html += '<span> <strong>X: </strong>' + particle.position.x + '</span>';
+            html += '<span> <strong>Y: </strong>' + particle.position.y + '</span>';
+            html += '<span> <strong>Z: </strong>' + particle.position.z + '</span>';
             info.innerHTML = html;
         }
         
     }
 
     function create_astro(obt){
-        var spt = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        
+        var spt = new THREE.Mesh(sphereGeometry, sphereMaterial[obt.typ].material);
         
         spt.position.x = obt.x;
         spt.position.y = obt.y;
         spt.position.z = obt.z;
         
-        spt.type = ('C' === obt.typ) ? 'Cometa' : ('M' === obt.typ) ? 'Meteoro' : 'Otro';
+        spt.type = sphereMaterial[obt.type].name;
         return spt
 
     }
