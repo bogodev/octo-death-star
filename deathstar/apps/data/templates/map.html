@@ -44,10 +44,12 @@
 			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
                         var container, stats, controls;
-
 			var camera, scene, renderer;
-
 			var mesh;
+
+                        var particles = 5000;
+                        var geometry, sphereThree;
+
 
 			init();
 			animate();
@@ -58,7 +60,7 @@
 
 			    //
 
-			    camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 500, 5000000 );
+			    camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 50, 5000000 );
 			    camera.position.z = 420000;
 
 			    scene = new THREE.Scene();
@@ -66,22 +68,12 @@
 
 			    //
 
-			    var particles = 1000;
-
-			    var geometry = new THREE.BufferGeometry();
-
-			    geometry.addAttribute( 'position', new Float32Array( particles), 3 );
-			    geometry.addAttribute( 'color', new Float32Array( particles), 3 );
-
-			    var positions = geometry.getAttribute( 'position' ).array;
-			    var colors = geometry.getAttribute( 'color' ).array;
-
-			    var color = new THREE.Color();
-
 			    var limit = 100000;
 
-                            var ast =new THREE.Mesh( new THREE.SphereGeometry( 200, 8, 8), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ) );
-
+                            var sphereGeometry = new THREE.SphereGeometry(2000, 10, 10);
+                            var sphereMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
+                            
+                            sphereThree = [];
 			    for ( var i = 0; i < particles; i += 1 ) {
 
 				// positions
@@ -89,47 +81,20 @@
 				var x = (Math.random() * limit * 2) - limit;
 				var y = (Math.random() * limit * 2) - limit;
 				var z = (Math.random() * limit * 2) - limit;
+                                sphereThree[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
 
-				positions[ i ]     = x;
-				positions[ i + 1 ] = y;
-				positions[ i + 2 ] = z;
-
-				// colors
-
-				var vx = 255;
-				var vy = 0;
-				var vz = 0;
-
-				color.setRGB( vx, vy, vz );
-
-				colors[ i ]     = color.r;
-				colors[ i + 1 ] = color.g;
-				colors[ i + 2 ] = color.b;
-                                
-                                n_ast = ast.clone();
-                                n_ast.position.x = x;
-                                n_ast.position.y = y;
-                                n_ast.position.z = z;
-                                //scene.add(n_ast);
+                                sphereThree[i].position.x = x;
+                                sphereThree[i].position.y = y;
+                                sphereThree[i].position.z = z;
+                                scene.add(sphereThree[i]);
 			    }
 
-			    geometry.computeBoundingSphere();
-
-			    //
 
                             var mesh = new THREE.Mesh( new THREE.SphereGeometry( 2000, 100, 100), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ) );
                             mesh.position.x = 0;
                             mesh.position.y = 0;
                             mesh.position.z = 0;
                             scene.add( mesh );
-
-
-
-			    var material = new THREE.ParticleSystemMaterial( { size: 1500, vertexColors: true } );
-			    particleSystem = new THREE.ParticleSystem( geometry, material );
-			    scene.add( particleSystem );
-
-                            
 
 			    //
 
