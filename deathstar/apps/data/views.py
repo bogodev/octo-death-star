@@ -7,9 +7,10 @@ from apps.data.models import SensorData
 
 def test_data(request):
 
-    source = request.GET['source']
+    source = request.GET.get('source',None)
 
     response_data = {}
+
     if source == "live":
         response_data['data'] = SensorData.get_live_data();
     else:
