@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
+from django.conf import settings
 
 class SensorData(models.Model):
+
+    stamp = models.PositiveIntegerField()
+    data_line = models.TextField(null=True)
 
     @staticmethod
     def get_latest_data():
@@ -27,6 +31,22 @@ class SensorData(models.Model):
     @staticmethod
     def get_data_string(index):
         return "1;O,5135,5042,5000;M,10000,10000,10000"
+
+    @staticmethod
+    def import_test_data():
+
+        with open(settings.SITE_ROOT + "/deathstar/apps/data/initial_data.csv") as f:
+            content = f.readlines()
+
+        for line in content:
+            split = line.split(';', 1)
+            index = split[0]
+            value = split[1]
+
+            testObject = SensorData(stamp=index,data_line=value)
+            testObject.save()
+
+        return "Completed"
 
     @staticmethod
     def parse_data_string(data):

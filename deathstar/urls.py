@@ -13,5 +13,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^data/$', 'apps.data.views.test_data'),
+    url(r'^import_initial_data/$', 'apps.data.views.load_test_data'),
 )
 
