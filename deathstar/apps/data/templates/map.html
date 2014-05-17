@@ -1,62 +1,72 @@
 
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>Map</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-			    color: #cccccc;
-				font-family:Monospace;
-				font-size:13px;
-				text-align:center;
+<head>
+	<title>Map</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+	body {
+		color: #cccccc;
+		font-family:Monospace;
+		font-size:13px;
+		text-align:center;
 
-				background-color: #050505;
-				margin: 0px;
-				overflow: hidden;
-			}
+		background-color: #050505;
+		margin: 0px;
+		overflow: hidden;
+	}
 
-			#info {
-				position: absolute;
-				top: 0px; width: 100%;
-				padding: 5px;
-			}
+	#info {
+		position: absolute;
+		top: 0px; width: 100%;
+		padding: 5px;
+	}
 
-			a {
+	a {
 
-				color: #0080ff;
-			}
-		</style>e
-	</head>
-	<body>
+		color: #0080ff;
+	}
+</style>e
+</head>
+<body>
 
-		<div id="container"></div>
-		<div id="info"><a href="http://threejs.org" target="_blank">three.js</a> webgl - buffergeometry - particles</div>
+	<div id="container"></div>
+	<div id="info"><a href="http://threejs.org" target="_blank">three.js</a> webgl - buffergeometry - particles</div>
 
-		<script src="{{ STATIC_URL }}js/three/three.min.js"></script>
-                <script src="{{ STATIC_URL }}js/three/controls/OrbitControls.js"></script>
-		<script src="{{ STATIC_URL }}js/three/Detector.js"></script>
-		<script src="{{ STATIC_URL }}js/three/libs/stats.min.js"></script>
+	<script src="{{ STATIC_URL }}js/three/three.min.js"></script>
+	<script src="{{ STATIC_URL }}js/three/controls/OrbitControls.js"></script>
+	<script src="{{ STATIC_URL }}js/three/Detector.js"></script>
+	<script src="{{ STATIC_URL }}js/three/libs/stats.min.js"></script>
 
-		<script>
+	<script>
 
-			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+	if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-                        var container, stats, controls;
-			var camera, scene, renderer;
-			var mesh;
+	var container, stats, controls;
+	var camera, scene, renderer;
+	var mesh;
 
-                        var particles = 5000;
-                        var geometry, sphereThree;
+	var particles = 200;
+	var geometry, sphereThree;
 
+	var info = document.createElement( 'div' );
+	info.style.position = 'absolute';
+	info.style.color = 'white';
+	info.style.top = '10px';
+	info.style.width = '100%';
+	info.style.textAlign = 'center';
+	document.body.appendChild( info );
 
-			init();
-			animate();
+	var projector = new THREE.Projector();
+	document.addEventListener( 'mousedown', onDocumentMouseDown, false);
 
-			function init() {
+	init();
+	animate();
 
-			    container = document.getElementById( 'container' );
+	function init() {
+
+		container = document.getElementById( 'container' );
 
 			    //
 
@@ -70,10 +80,10 @@
 
 			    var limit = 100000;
 
-                            var sphereGeometry = new THREE.SphereGeometry(2000, 10, 10);
-                            var sphereMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
-                            
-                            sphereThree = [];
+			    var sphereGeometry = new THREE.SphereGeometry(2000, 10, 10);
+			    var sphereMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
+
+			    sphereThree = [];
 			    for ( var i = 0; i < particles; i += 1 ) {
 
 				// positions
@@ -81,20 +91,24 @@
 				var x = (Math.random() * limit * 2) - limit;
 				var y = (Math.random() * limit * 2) - limit;
 				var z = (Math.random() * limit * 2) - limit;
-                                sphereThree[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
+				sphereThree[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
 
-                                sphereThree[i].position.x = x;
-                                sphereThree[i].position.y = y;
-                                sphereThree[i].position.z = z;
-                                scene.add(sphereThree[i]);
-			    }
+				sphereThree[i].position.x = x;
+				sphereThree[i].position.y = y;
+				sphereThree[i].position.z = z;
+
+				var type = 'O';
+				sphereThree[i].type = ('C' === type) ? 'Cometa' : ('M' === type) ? 'Meteoro' : 'Otro';
+
+				scene.add(sphereThree[i]);
+			}
 
 
-                            var mesh = new THREE.Mesh( new THREE.SphereGeometry( 2000, 100, 100), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ) );
-                            mesh.position.x = 0;
-                            mesh.position.y = 0;
-                            mesh.position.z = 0;
-                            scene.add( mesh );
+			var mesh = new THREE.Mesh( new THREE.SphereGeometry( 2000, 100, 100), new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } ) );
+			mesh.position.x = 0;
+			mesh.position.y = 0;
+			mesh.position.z = 0;
+			scene.add( mesh );
 
 			    //
 
@@ -114,20 +128,20 @@
 			    //
 
 			    window.addEventListener( 'resize', onWindowResize, false );
-                            controls = new THREE.OrbitControls( camera );
-                            controls.addEventListener( 'change', render ) ;
+			    controls = new THREE.OrbitControls( camera );
+			    controls.addEventListener( 'change', render ) ;
 
 			}
 
 			function onWindowResize() {
 
-			    windowHalfX = window.innerWidth / 2;
-			    windowHalfY = window.innerHeight / 2;
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
 
-			    camera.aspect = window.innerWidth / window.innerHeight;
-			    camera.updateProjectionMatrix();
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
 
-			    renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize( window.innerWidth, window.innerHeight );
 
 			}
 
@@ -135,11 +149,11 @@
 
 			function animate() {
 
-			    requestAnimationFrame( animate );
+				requestAnimationFrame( animate );
 
-			    render();
-			    stats.update();
-                            controls.update();
+				render();
+				stats.update();
+				controls.update();
 
 			}
 
@@ -154,7 +168,34 @@
 
 			}
 
-		</script>
+			function onDocumentMouseDown( event ) {
 
-	</body>
-</html>
+				event.preventDefault();
+
+				var vector = new THREE.Vector3( 
+					( event.clientX / window.innerWidth ) * 2 - 1, 
+					- ( event.clientY / window.innerHeight ) * 2 + 1, 
+					0.5 );
+
+				projector.unprojectVector( vector, camera );
+
+				var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+				var intersects = ray.intersectObjects( sphereThree );    
+
+				if ( intersects.length > 0 ) {
+
+					var particle = intersects[0].object;
+					var html = '<h2> ' + particle.type + '</h2>';
+					html += '<span> ' + particle.position.x + '</span>';
+					html += '<span> ' + particle.position.y + '</span>';
+					html += '<span> ' + particle.position.z + '</span>';
+					info.innerHTML = html;
+			    }
+
+			}
+
+			</script>
+
+		</body>
+		</html>
