@@ -3,6 +3,8 @@
 
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+
 import time
 
 
@@ -35,12 +37,13 @@ class SensorData(models.Model):
     @staticmethod
     def get_data_string(index):
 
-        # index = 5000
-
-        dataline = SensorData.objects.get(stamp=index)
-        # if the stamp does not exist, then get the closest stamp in the past
-
-        stamp = index
+        try:
+            dataline = SensorData.objects.get(stamp=index)
+            stamp = index
+        except ObjectDoesNotExist, e:
+            # This is a big fat lie. the stamp changes, but the data not.
+            dataline = SensorData.objects.get(stamp=1)
+            stamp = index
 
         return dataline.data_line, stamp
 
