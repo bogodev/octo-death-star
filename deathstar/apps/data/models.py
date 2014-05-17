@@ -19,3 +19,28 @@ class SensorData(models.Model):
             {'x':5161,'y':5319,'z':5001},
             {'x':5176,'y':5361,'z':5001},
         ]
+
+    @staticmethod
+    def get_live_data():
+        return SensorData.parse_data_string(SensorData.get_data_string(1))
+
+    @staticmethod
+    def get_data_string(index):
+        return "1;O,5135,5042,5000;M,10000,10000,10000"
+
+    @staticmethod
+    def parse_data_string(data):
+        """
+        must return an array of x,y,z,type,index values
+        """
+        values = data.split(';')
+        index = data[0]
+        values = values[1:]
+
+        result = []
+
+        for space_object in values:
+            object_data = space_object.split(',')
+            result.append(dict(zip(['type','x','y','z'],object_data)))
+
+        return result
