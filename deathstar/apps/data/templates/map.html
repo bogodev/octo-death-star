@@ -240,10 +240,11 @@
     }
 
 
-   var  move= false;
+    var  move= false;
+    var spn= 20;
 
     function move_element(element, pp, iter, cn){
-        if (iter>= 10){
+        if (iter>= spn || move==false){
             return;
         }
         console.log(element.position)
@@ -259,7 +260,9 @@
 
 
     function update_data(){
+        move = false;
         $.get("/data/", function(data){
+            move= true;
             if (sphereThree.length == 0){
                 $.each(data.data, function(pt, r){
                     sphereThree[r.index] = create_astro(r);
@@ -270,15 +273,15 @@
                     //sphereThree[r.index].position.x = r.x;
                     //sphereThree[r.index].position.y = r.y;
                     //sphereThree[r.index].position.z = r.z;
-                    cn = 20;
+                    cn = spn;
                     var pp ={};
                     pp.x = (r.x - sphereThree[r.index].position.x) / cn 
                     pp.y = (r.y - sphereThree[r.index].position.y) / cn 
                     pp.z = (r.z - sphereThree[r.index].position.z) / cn 
                     setTimeout(function(){
-                        move_element(sphereThree[r.index], pp, 0, 300/cn);
+                        move_element(sphereThree[r.index], pp, 0, 500/cn);
                     },
-                               300/cn
+                               5
                               );
                     if(sphereThree[r.index].observado){
                         show_info(sphereThree[r.index]);
